@@ -1,14 +1,19 @@
 const express = require("express");
-
+const cors = require("cors");
 const db = require("./data/db");
 
+// routes
+const postRoutes = require("./routes/posts");
+
+// initialize server instance
 const server = express();
 
-server.use(express.json());
+// middleware
+server.use(express.json()); // parse incoming json
+server.use(cors()); // allow cors
 
-server.get("/", (req, res) => {
-  res.status(200).json({ message: "server running" });
-});
+server.use("/api/posts", postRoutes);
+server.use("/api", (req, res) => res.send("API running"));
 
 const port = 8000;
 server.listen(port, () => {
