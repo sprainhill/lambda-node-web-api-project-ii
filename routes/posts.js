@@ -114,9 +114,28 @@ router.get("/:id/comments", (req, res) => {
   }
 });
 
+// UPDATE a post by id
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { title, body } = req.body;
+
+  db.update(id, req.body)
+    .then(number => {
+      if (number) {
+        res.status(200).json({ message: "record updated" });
+      } else {
+        res.status(404).json({ message: "post not found" });
+      }
+    })
+    .catch(() => {
+      res.status(500).json({ message: "error updating post" });
+    });
+});
+
 // DELETE a post by id
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
+  console.log("db.findById(id)", db.findById(id));
 
   if (db.findById(id)) {
     db.remove(id)
@@ -128,5 +147,7 @@ router.delete("/:id", (req, res) => {
       .catch(() => {
         res.status(500).json({ message: "error deleting post by id" });
       });
+  } else {
+    res.status(404).json({ message: "no post found" });
   }
 });
