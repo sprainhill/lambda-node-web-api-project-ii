@@ -83,24 +83,50 @@ router.get("/", (req, res) => {
 // GET post by id
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  db.findById(id)
-    .then(post => {
-      res.status(200).json(post);
-    })
-    .catch(() => {
-      res.status(500).json({ message: "error retrieving post by id" });
-    });
+
+  if (db.findById(id)) {
+    db.findById(id)
+      .then(post => {
+        res.status(200).json(post);
+      })
+      .catch(() => {
+        res.status(500).json({ message: "error retrieving post by id" });
+      });
+  } else {
+    res.status(404).json({ message: "post not found" });
+  }
 });
 
 // GET /api/posts/:id/comments
 router.get("/:id/comments", (req, res) => {
   const { id } = req.params;
 
-  db.findPostComments(id)
-    .then(comments => {
-      res.status(200).json(comments);
-    })
-    .catch(() => {
-      res.status(500).json({ message: "error retrieving comments" });
-    });
+  if (db.findById(id)) {
+    db.findPostComments(id)
+      .then(comments => {
+        res.status(200).json(comments);
+      })
+      .catch(() => {
+        res.status(500).json({ message: "error retrieving comments" });
+      });
+  } else {
+    res.status(404).json({ message: "post not found" });
+  }
+});
+
+// DELETE a post by id
+router.delete("/:id", (req, res) => {
+  const { id } = req.params;
+
+  if (db.findById(id)) {
+    db.remove(id)
+      .then(
+        db.findById(id).then(post => {
+          res.status(200).json(post);
+        })
+      )
+      .catch(() => {
+        res.status(500).json({ message: "error deleting post by id" });
+      });
+  }
 });
