@@ -31,6 +31,12 @@ const server = express();
 server.use(express.json()); // parse incoming json
 server.use(logger); // add custom middleware logging
 server.use(cors()); // allow cors
+// declare and use middleware inline
+server.use((err, req, res, next) => {
+  console.log("error", err);
+
+  res.status(500).json({ message: "Error performing required operation" });
+});
 
 // write an endpoint that sends a file to the client
 // in response to a GET request to the /download endpoint
