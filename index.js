@@ -32,18 +32,13 @@ server.use(express.json()); // parse incoming json
 server.use(logger); // add custom middleware logging
 server.use(cors()); // allow cors
 // declare and use middleware inline
-server.use((err, req, res, next) => {
-  console.log("error", err);
-
-  res.status(500).json({ message: "Error performing required operation" });
-});
 
 // write an endpoint that sends a file to the client
 // in response to a GET request to the /download endpoint
 server.get("/download", (req, res, next) => {
   const filePath = path.join(__dirname, "index.html");
   res.sendFile(filePath, err => {
-    // if there is ab error the callback function willl get an error
+    // if there is an error the callback function willl get an error
     // as its first argument
     if (err) {
       // can handle error here or pass it down to error handling middleware
@@ -54,15 +49,21 @@ server.get("/download", (req, res, next) => {
   });
 });
 
+server.use((err, req, res, next) => {
+  console.log("error", err);
+
+  res.status(500).json({ message: "Error performing required operation" });
+});
+
 server.use("/api/posts", postRoutes);
 // server.use("/api", (req, res) => res.send("API running"));
 
 // Write a request handler that responds with a custom message
 // for invalid URLs
 
-server.use(function(req, res) {
-  res.status(404).send("Aint nobody got time for that!");
-});
+// server.use(function(req, res) {
+//   res.status(404).send("Aint nobody got time for that!");
+// });
 
 // custom middleware endpoint
 server.get("/mellon", auth, (req, res) => {
